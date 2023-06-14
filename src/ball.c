@@ -4,8 +4,8 @@
 
 #include "ball.h"
 
-int INITIAL_BALL_SPEED = 5;
-float INITIAL_BALL_RADIUS = 10.0f;
+const float INITIAL_BALL_SPEED = 5.0f;
+const float INITIAL_BALL_RADIUS = 10.0f;
 
 Ball ball_create() {
     Ball ball;
@@ -28,9 +28,25 @@ Ball ball_create() {
 void ball_update(Ball *ball) {
     ball->Position.x += ball->Velocity.x;
     ball->Position.y += ball->Velocity.y;
+
+    if (ball->Position.y - ball->Radius < 0) {
+        ball->Velocity.y = ball->Speed;
+    }
+
+    if (ball->Position.y + ball->Radius > (float) GetScreenHeight()) {
+        ball->Velocity.y = -ball->Speed;
+    }
 }
 
 void ball_draw(Ball *ball) {
     DrawCircle((int) ball->Position.x, (int) ball->Position.y,
                ball->Radius, WHITE);
+}
+
+bool ball_out_to_right(Ball *ball) {
+    return ball->Position.x - ball->Radius > (float) GetScreenWidth();
+}
+
+bool ball_out_to_left(Ball *ball) {
+    return ball->Position.x + ball->Radius < 0;
 }
