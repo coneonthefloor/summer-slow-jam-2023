@@ -6,6 +6,14 @@ void Update(GameData *data) {
     paddle_update(&data->RightPaddle);
     paddle_update(&data->LeftPaddle);
     ball_update(&data->Ball);
+
+    if (ball_out_to_left(&data->Ball)) {
+        data->RightPaddle.Score++;
+    }
+
+    if (ball_out_to_right(&data->Ball)) {
+        data->LeftPaddle.Score++;
+    }
 }
 
 void Draw(GameData *data) {
