@@ -9,10 +9,28 @@ void Update(GameData *data) {
 
     if (ball_out_to_left(&data->Ball)) {
         data->RightPaddle.Score++;
+        data->Ball.Active = false;
     }
 
     if (ball_out_to_right(&data->Ball)) {
         data->LeftPaddle.Score++;
+        data->Ball.Active = false;
+    }
+
+    if (data->Ball.Active) {
+        if (data->Ball.Velocity.x > 0) {
+            paddle_move_to_center(&data->LeftPaddle);
+            paddle_chase_ball(&data->RightPaddle, &data->Ball);
+        }
+
+        if (data->Ball.Velocity.x < 0) {
+            paddle_move_to_center(&data->RightPaddle);
+            paddle_chase_ball(&data->LeftPaddle, &data->Ball);
+        }
+    }
+
+    if (!data->Ball.Active) {
+        ball_set_default_values(&data->Ball);
     }
 }
 
@@ -45,8 +63,8 @@ GameData init() {
 }
 
 int main(void) {
-    const int screenWidth = 600;
-    const int screenHeight = 600;
+    const int screenWidth = 640;
+    const int screenHeight = 480;
     const char title[] = "SummerSlowJams2023";
 
     InitWindow(screenWidth, screenHeight, title);

@@ -4,28 +4,37 @@
 
 #include "ball.h"
 
-const float INITIAL_BALL_SPEED = 5.0f;
+const float INITIAL_BALL_SPEED = 2.0f;
 const float INITIAL_BALL_RADIUS = 10.0f;
+
+void ball_set_default_values(Ball *ball) {
+    ball->Active = true;
+    ball->Speed = INITIAL_BALL_SPEED;
+    ball->Radius = INITIAL_BALL_RADIUS;
+
+    float initialX = (float) GetScreenWidth() / 2;
+    float initialY = (float) GetScreenHeight() / 2;
+
+    Vector2 position = {.x = initialX, .y = initialY};
+    Vector2 velocity = {.x = -ball->Speed, .y = ball->Speed / 2};
+
+    ball->Position = position;
+    ball->Velocity = velocity;
+}
 
 Ball ball_create() {
     Ball ball;
 
-    ball.Speed = INITIAL_BALL_SPEED;
-    ball.Radius = INITIAL_BALL_RADIUS;
-
-    float initialY = (float) GetScreenWidth() / 2 - (float) ball.Radius;
-    float initialX = (float) GetScreenHeight() / 2 - (float) ball.Radius;
-
-    Vector2 position = {.x = initialX, .y = initialY};
-    Vector2 velocity = {.x = 0, .y = 0};
-
-    ball.Position = position;
-    ball.Velocity = velocity;
+    ball_set_default_values(&ball);
 
     return ball;
 }
 
 void ball_update(Ball *ball) {
+    if(!ball->Active) {
+        return;
+    }
+
     ball->Position.x += ball->Velocity.x;
     ball->Position.y += ball->Velocity.y;
 

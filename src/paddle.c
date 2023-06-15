@@ -2,11 +2,13 @@
 // Created by brian on 14/06/2023.
 //
 
+#include <math.h>
 #include "paddle.h"
+#include "ball.h"
 
 const int INITIAL_PADDLE_WIDTH = 10;
 const int INITIAL_PADDLE_HEIGHT = 120;
-const float INITIAL_PADDLE_SPEED = 50.0f;
+const float INITIAL_PADDLE_SPEED = 1.0f;
 
 Paddle paddle_create() {
     Paddle paddle;
@@ -64,4 +66,41 @@ Vector2 paddle_initial_right_position(Paddle *paddle) {
     pos.y = (float) GetScreenHeight() / 2 -
             (float) paddle->Height / 2;
     return pos;
+}
+
+Vector2 MoveTowards(Vector2 current, Vector2 target, float maxDistanceDelta) {
+    float toVector_x = target.x - current.x;
+    float toVector_y = target.y - current.y;
+
+    double sqDist = toVector_x * toVector_x + toVector_y * toVector_y;
+
+    if (sqDist == 0 || (maxDistanceDelta >= 0 &&
+                        sqDist <= maxDistanceDelta * maxDistanceDelta))
+        return target;
+
+    float dist = (float) sqrt(sqDist);
+    float x = current.x + toVector_x / dist * maxDistanceDelta;
+    float y = current.y + toVector_y / dist * maxDistanceDelta;
+    Vector2 new_position = {.x = x, .y = y};
+    return new_position;
+}
+
+void paddle_chase_ball(Paddle *paddle, Ball *ball) {
+    Vector2 target_position = {.x =paddle->Position.x, .y=ball->Position.y -
+                                                          (float) paddle->Height /
+                                                          2};
+    Vector2 new_position = MoveTowards(paddle->Position, target_position,
+                                       paddle->Speed);
+    paddle->Position.x = new_position.x;
+    paddle->Position.y = new_position.y;
+}
+
+void paddle_move_to_center(Paddle *paddle) {
+    float centerY = (float) GetScreenHeight() / 2 -
+                    (float) paddle->Height / 2;
+    Vector2 center = {.x = paddle->Position.x, .y = centerY};
+    Vector2 new_position = MoveTowards(paddle->Position, center,
+                                       paddle->Speed);
+    paddle->Position.x = new_position.x;
+    paddle->Position.y = new_position.y;
 }

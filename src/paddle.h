@@ -6,6 +6,7 @@
 #define SUMMERSLOWJAM2023_PADDLE_H
 
 #include <raylib.h>
+#include "ball.h"
 
 typedef struct Paddle {
     int Score;
@@ -21,5 +22,7 @@ void paddle_draw(Paddle *paddle);
 void paddle_update(Paddle *paddle);
 Vector2 paddle_initial_left_position(Paddle *paddle);
 Vector2 paddle_initial_right_position(Paddle *paddle);
+void paddle_chase_ball(Paddle *paddle, Ball *ball);
+void paddle_move_to_center(Paddle *paddle);
 
 #endif //SUMMERSLOWJAM2023_PADDLE_H

@@ -8,6 +8,7 @@
 #include <raylib.h>
 
 typedef struct Ball {
+    bool Active;
     float Speed;
     float Radius;
     Vector2 Position;
@@ -19,5 +20,6 @@ void ball_draw(Ball* ball);
 void ball_update(Ball* ball);
 bool ball_out_to_left(Ball *ball);
 bool ball_out_to_right(Ball *ball);
+void ball_set_default_values(Ball *ball);
 
 #endif //SUMMERSLOWJAM2023_BALL_H
