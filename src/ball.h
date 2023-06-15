@@ -6,6 +6,7 @@
 #define SUMMERSLOWJAM2023_BALL_H
 
 #include <raylib.h>
+#include "paddle.h"
 
 typedef struct Ball {
     bool Active;
@@ -21,5 +22,6 @@ void ball_update(Ball* ball);
 bool ball_out_to_left(Ball *ball);
 bool ball_out_to_right(Ball *ball);
 void ball_set_default_values(Ball *ball);
+bool ball_hits_paddle(Ball *ball, Paddle *paddle);
 
 #endif //SUMMERSLOWJAM2023_BALL_H

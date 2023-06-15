@@ -2,13 +2,13 @@
 // Created by brian on 14/06/2023.
 //
 
-#include <math.h>
-#include "paddle.h"
 #include "ball.h"
+#include "paddle.h"
+#include "vector-extension.h"
 
 const int INITIAL_PADDLE_WIDTH = 10;
 const int INITIAL_PADDLE_HEIGHT = 120;
-const float INITIAL_PADDLE_SPEED = 1.0f;
+const float INITIAL_PADDLE_SPEED = 4.0f;
 
 Paddle paddle_create() {
     Paddle paddle;
@@ -31,9 +31,8 @@ void paddle_update(Paddle *paddle) {
     paddle->Position.x += paddle->Velocity.x;
     paddle->Position.y += paddle->Velocity.y;
 
-    float halfHeight = (float) paddle->Height / 2;
-    float minY = halfHeight;
-    float maxY = (float) GetScreenHeight() - halfHeight;
+    float minY = 0;
+    float maxY = (float) GetScreenHeight() - (float) paddle->Height;
 
     if (paddle->Position.y < minY) {
         paddle->Position.y = minY;
@@ -68,27 +67,9 @@ Vector2 paddle_initial_right_position(Paddle *paddle) {
     return pos;
 }
 
-Vector2 MoveTowards(Vector2 current, Vector2 target, float maxDistanceDelta) {
-    float toVector_x = target.x - current.x;
-    float toVector_y = target.y - current.y;
-
-    double sqDist = toVector_x * toVector_x + toVector_y * toVector_y;
-
-    if (sqDist == 0 || (maxDistanceDelta >= 0 &&
-                        sqDist <= maxDistanceDelta * maxDistanceDelta))
-        return target;
-
-    float dist = (float) sqrt(sqDist);
-    float x = current.x + toVector_x / dist * maxDistanceDelta;
-    float y = current.y + toVector_y / dist * maxDistanceDelta;
-    Vector2 new_position = {.x = x, .y = y};
-    return new_position;
-}
-
 void paddle_chase_ball(Paddle *paddle, Ball *ball) {
-    Vector2 target_position = {.x =paddle->Position.x, .y=ball->Position.y -
-                                                          (float) paddle->Height /
-                                                          2};
+    float targetY = ball->Position.y - (float) paddle->Height / 2;
+    Vector2 target_position = {.x =paddle->Position.x, .y= targetY};
     Vector2 new_position = MoveTowards(paddle->Position, target_position,
                                        paddle->Speed);
     paddle->Position.x = new_position.x;

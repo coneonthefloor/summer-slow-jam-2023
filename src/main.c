@@ -27,6 +27,18 @@ void Update(GameData *data) {
             paddle_move_to_center(&data->RightPaddle);
             paddle_chase_ball(&data->LeftPaddle, &data->Ball);
         }
+
+        if (ball_hits_paddle(&data->Ball, &data->LeftPaddle)) {
+            data->Ball.Velocity.x = data->Ball.Speed;
+            data->Ball.Velocity.y = (float) GetRandomValue(1,
+                                                           (int) data->Ball.Speed);
+        }
+
+        if (ball_hits_paddle(&data->Ball, &data->RightPaddle)) {
+            data->Ball.Velocity.x = -data->Ball.Speed;
+            data->Ball.Velocity.y = (float) GetRandomValue(1,
+                                                           (int) data->Ball.Speed);
+        }
     }
 
     if (!data->Ball.Active) {

@@ -3,8 +3,9 @@
 //
 
 #include "ball.h"
+#include "paddle.h"
 
-const float INITIAL_BALL_SPEED = 2.0f;
+const float INITIAL_BALL_SPEED = 4.0f;
 const float INITIAL_BALL_RADIUS = 10.0f;
 
 void ball_set_default_values(Ball *ball) {
@@ -31,7 +32,7 @@ Ball ball_create() {
 }
 
 void ball_update(Ball *ball) {
-    if(!ball->Active) {
+    if (!ball->Active) {
         return;
     }
 
@@ -58,4 +59,14 @@ bool ball_out_to_right(Ball *ball) {
 
 bool ball_out_to_left(Ball *ball) {
     return ball->Position.x + ball->Radius < 0;
+}
+
+bool ball_hits_paddle(Ball *ball, Paddle *paddle) {
+    Rectangle paddleBounds = {.x = paddle->Position.x +
+                                   (float) paddle->Width, .y = paddle->Position.y,
+            .width = (float) paddle->Width, .height = (float) paddle->Height};
+    Rectangle ballBounds = {.x = ball->Position.x, .y = ball->Position.y, .width =
+    ball->Radius * 2, .height = ball->Radius * 2};
+
+    return CheckCollisionRecs(paddleBounds, ballBounds);
 }

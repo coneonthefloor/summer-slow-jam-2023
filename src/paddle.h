@@ -17,6 +17,8 @@ typedef struct Paddle {
     Vector2 Velocity;
 } Paddle;
 
+typedef struct Ball Ball;
+
 Paddle paddle_create();
 void paddle_draw(Paddle *paddle);
 void paddle_update(Paddle *paddle);
