@@ -9,10 +9,12 @@
 #include <raylib.h>
 #include "ball.h"
 #include "paddle.h"
+#include "aabb.h"
 
 typedef struct GameData {
     int Gold;
     Ball Ball;
+    AABB PongBounds;
     Paddle LeftPaddle;
     Paddle RightPaddle;
 } GameData;

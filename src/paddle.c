@@ -27,12 +27,12 @@ Paddle paddle_create() {
     return paddle;
 }
 
-void paddle_update(Paddle *paddle) {
+void paddle_update(Paddle *paddle, AABB *bounds) {
     paddle->Position.x += paddle->Velocity.x;
     paddle->Position.y += paddle->Velocity.y;
 
     float minY = 0;
-    float maxY = (float) GetScreenHeight() - (float) paddle->Height;
+    float maxY = bounds->Height - (float) paddle->Height;
 
     if (paddle->Position.y < minY) {
         paddle->Position.y = minY;
@@ -49,20 +49,20 @@ void paddle_draw(Paddle *paddle) {
                   paddle->Width, paddle->Height, WHITE);
 }
 
-Vector2 paddle_initial_left_position(Paddle *paddle) {
+Vector2 paddle_initial_left_position(Paddle *paddle, AABB *bounds) {
     Vector2 pos;
     float xOffset = 20.0f;
     pos.x = xOffset;
-    pos.y = (float) GetScreenHeight() / 2 -
+    pos.y = bounds->Width / 2 -
             (float) paddle->Height / 2;
     return pos;
 }
 
-Vector2 paddle_initial_right_position(Paddle *paddle) {
+Vector2 paddle_initial_right_position(Paddle *paddle, AABB *bounds) {
     Vector2 pos;
     float xOffset = 20.0f;
-    pos.x = (float) GetScreenWidth() - xOffset - (float) paddle->Width;
-    pos.y = (float) GetScreenHeight() / 2 -
+    pos.x = bounds->Width - xOffset - (float) paddle->Width;
+    pos.y = bounds->Height / 2 -
             (float) paddle->Height / 2;
     return pos;
 }
@@ -76,8 +76,8 @@ void paddle_chase_ball(Paddle *paddle, Ball *ball) {
     paddle->Position.y = new_position.y;
 }
 
-void paddle_move_to_center(Paddle *paddle) {
-    float centerY = (float) GetScreenHeight() / 2 -
+void paddle_move_to_center(Paddle *paddle, AABB *bounds) {
+    float centerY = bounds->Height / 2 -
                     (float) paddle->Height / 2;
     Vector2 center = {.x = paddle->Position.x, .y = centerY};
     Vector2 new_position = MoveTowards(paddle->Position, center,

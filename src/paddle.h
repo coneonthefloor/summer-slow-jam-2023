@@ -7,6 +7,7 @@
 
 #include <raylib.h>
 #include "ball.h"
+#include "aabb.h"
 
 typedef struct Paddle {
     int Score;
@@ -21,10 +22,10 @@ typedef struct Ball Ball;
 
 Paddle paddle_create();
 void paddle_draw(Paddle *paddle);
-void paddle_update(Paddle *paddle);
-Vector2 paddle_initial_left_position(Paddle *paddle);
-Vector2 paddle_initial_right_position(Paddle *paddle);
+void paddle_update(Paddle *paddle, AABB *bounds);
+Vector2 paddle_initial_left_position(Paddle *paddle, AABB *bounds);
+Vector2 paddle_initial_right_position(Paddle *paddle, AABB *bounds);
 void paddle_chase_ball(Paddle *paddle, Ball *ball);
-void paddle_move_to_center(Paddle *paddle);
+void paddle_move_to_center(Paddle *paddle, AABB *bounds);
 
 #endif //SUMMERSLOWJAM2023_PADDLE_H

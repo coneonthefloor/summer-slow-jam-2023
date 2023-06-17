@@ -3,7 +3,7 @@ project(SummerSlowJam2023 C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(SummerSlowJam2023 src/main.c src/ball.c src/ball.h src/main.h src/paddle.c src/paddle.h src/vector-extension.c src/vector-extension.h)
+add_executable(SummerSlowJam2023 src/main.c src/ball.c src/ball.h src/main.h src/paddle.c src/paddle.h src/vector-extension.c src/vector-extension.h src/aabb.c src/aabb.h)
 
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(SummerSlowJam2023 PRIVATE raylib)

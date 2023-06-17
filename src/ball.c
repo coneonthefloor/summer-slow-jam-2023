@@ -8,13 +8,13 @@
 const float INITIAL_BALL_SPEED = 4.0f;
 const float INITIAL_BALL_RADIUS = 10.0f;
 
-void ball_set_default_values(Ball *ball) {
+void ball_set_default_values(Ball *ball, AABB *bounds) {
     ball->Active = true;
     ball->Speed = INITIAL_BALL_SPEED;
     ball->Radius = INITIAL_BALL_RADIUS;
 
-    float initialX = (float) GetScreenWidth() / 2;
-    float initialY = (float) GetScreenHeight() / 2;
+    float initialX = bounds->Width / 2;
+    float initialY = bounds->Height / 2;
 
     Vector2 position = {.x = initialX, .y = initialY};
     Vector2 velocity = {.x = -ball->Speed, .y = ball->Speed / 2};
@@ -23,15 +23,15 @@ void ball_set_default_values(Ball *ball) {
     ball->Velocity = velocity;
 }
 
-Ball ball_create() {
+Ball ball_create(AABB *bounds) {
     Ball ball;
 
-    ball_set_default_values(&ball);
+    ball_set_default_values(&ball, bounds);
 
     return ball;
 }
 
-void ball_update(Ball *ball) {
+void ball_update(Ball *ball, AABB *bounds) {
     if (!ball->Active) {
         return;
     }
@@ -43,7 +43,7 @@ void ball_update(Ball *ball) {
         ball->Velocity.y = ball->Speed;
     }
 
-    if (ball->Position.y + ball->Radius > (float) GetScreenHeight()) {
+    if (ball->Position.y + ball->Radius > bounds->Height) {
         ball->Velocity.y = -ball->Speed;
     }
 }
@@ -53,12 +53,12 @@ void ball_draw(Ball *ball) {
                ball->Radius, WHITE);
 }
 
-bool ball_out_to_right(Ball *ball) {
-    return ball->Position.x - ball->Radius > (float) GetScreenWidth();
+bool ball_out_to_right(Ball *ball, AABB *bounds) {
+    return ball->Position.x - ball->Radius > bounds->Width;
 }
 
-bool ball_out_to_left(Ball *ball) {
-    return ball->Position.x + ball->Radius < 0;
+bool ball_out_to_left(Ball *ball, AABB *bounds) {
+    return ball->Position.x + ball->Radius < bounds->Position.x;
 }
 
 bool ball_hits_paddle(Ball *ball, Paddle *paddle) {
