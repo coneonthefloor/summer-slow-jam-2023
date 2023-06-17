@@ -2,6 +2,16 @@
 
 #include "main.h"
 
+void drawGoldCount(int goldCount) {
+    int textPad = 10;
+    int fontSize = 20;
+
+    const char *gold = TextFormat("$ %d", goldCount);
+    int goldTextSize = MeasureText(gold, fontSize);
+    DrawText(gold, (GetScreenWidth() / 2) - goldTextSize / 2,
+             textPad, fontSize, LIGHTGRAY);
+}
+
 void Update(GameData *data) {
     paddle_update(&data->RightPaddle);
     paddle_update(&data->LeftPaddle);
@@ -29,12 +39,14 @@ void Update(GameData *data) {
         }
 
         if (ball_hits_paddle(&data->Ball, &data->LeftPaddle)) {
+            data->Gold++;
             data->Ball.Velocity.x = data->Ball.Speed;
             data->Ball.Velocity.y = (float) GetRandomValue(1,
                                                            (int) data->Ball.Speed);
         }
 
         if (ball_hits_paddle(&data->Ball, &data->RightPaddle)) {
+            data->Gold++;
             data->Ball.Velocity.x = -data->Ball.Speed;
             data->Ball.Velocity.y = (float) GetRandomValue(1,
                                                            (int) data->Ball.Speed);
@@ -51,6 +63,7 @@ void Draw(GameData *data) {
 
     ClearBackground(BLACK);
 
+    drawGoldCount(data->Gold);
     paddle_draw(&data->RightPaddle);
     paddle_draw(&data->LeftPaddle);
     ball_draw(&data->Ball);
@@ -61,6 +74,7 @@ void Draw(GameData *data) {
 GameData init() {
     GameData data;
 
+    data.Gold = 0;
     data.Ball = ball_create();
     data.LeftPaddle = paddle_create();
     data.RightPaddle = paddle_create();

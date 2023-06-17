@@ -11,6 +11,7 @@
 #include "paddle.h"
 
 typedef struct GameData {
+    int Gold;
     Ball Ball;
     Paddle LeftPaddle;
     Paddle RightPaddle;
