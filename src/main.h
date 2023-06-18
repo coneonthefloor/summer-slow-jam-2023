@@ -5,11 +5,11 @@
 #ifndef SUMMERSLOWJAM2023_MAIN_H
 #define SUMMERSLOWJAM2023_MAIN_H
 
-
 #include <raylib.h>
 #include "ball.h"
 #include "paddle.h"
 #include "aabb.h"
+#include "dino.h"
 
 typedef struct GameData {
     int Gold;
@@ -17,6 +17,8 @@ typedef struct GameData {
     AABB PongBounds;
     Paddle LeftPaddle;
     Paddle RightPaddle;
+    int DinoCount;
+    Dino Dinos[];
 } GameData;
 
 void Draw(GameData* data);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "main.h"
 
@@ -58,6 +59,10 @@ void Update(GameData *data) {
     if (!data->Ball.Active) {
         ball_set_default_values(&data->Ball, &data->PongBounds);
     }
+
+    for (int i = 0; i < data->DinoCount; i++) {
+        dino_update(&data->Dinos[i], &data->PongBounds);
+    }
 }
 
 void Draw(GameData *data) {
@@ -71,7 +76,19 @@ void Draw(GameData *data) {
     paddle_draw(&data->LeftPaddle);
     ball_draw(&data->Ball);
 
+    for (int i = 0; i < data->DinoCount; i++) {
+        dino_draw(&data->Dinos[i]);
+    }
+
     EndDrawing();
+}
+
+Texture2D getTextureFromImageFile(const char *fileName) {
+    Image image = LoadImage(fileName);
+    Texture2D texture = LoadTextureFromImage(image);
+    UnloadImage(image);
+
+    return texture;
 }
 
 GameData init() {
@@ -108,11 +125,37 @@ int main(void) {
 
     GameData data = init();
 
+    Texture2D pardTexture = getTextureFromImageFile(ASSETS_PATH"/pard.png");
+    Texture2D vitaTexture = getTextureFromImageFile(ASSETS_PATH"/vita.png");
+    Texture2D douxTexture = getTextureFromImageFile(ASSETS_PATH"/doux.png");
+    Texture2D mortTexture = getTextureFromImageFile(ASSETS_PATH"/mort.png");
+
+    Dino pard = dino_create(&pardTexture);
+    Dino vita = dino_create(&vitaTexture);
+    Dino doux = dino_create(&douxTexture);
+    Dino mort = dino_create(&mortTexture);
+
+    pard.Position = (Vector2){10, 10};
+    vita.Position = (Vector2){10, 30};
+    doux.Position = (Vector2){10, 50};
+    mort.Position = (Vector2){10, 70};
+
+    data.Dinos[0] = pard;
+    data.Dinos[1] = vita;
+    data.Dinos[2] = doux;
+    data.Dinos[3] = mort;
+
+    data.DinoCount = 4;
+
     while (!WindowShouldClose()) {
         Update(&data);
         Draw(&data);
     }
 
+    UnloadTexture(pardTexture);
+    UnloadTexture(vitaTexture);
+    UnloadTexture(douxTexture);
+    UnloadTexture(mortTexture);
     CloseWindow();
     return 0;
 }
