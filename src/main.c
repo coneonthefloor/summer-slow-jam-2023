@@ -130,15 +130,32 @@ int main(void) {
     Texture2D douxTexture = getTextureFromImageFile(ASSETS_PATH"/doux.png");
     Texture2D mortTexture = getTextureFromImageFile(ASSETS_PATH"/mort.png");
 
-    Dino pard = dino_create(&pardTexture);
-    Dino vita = dino_create(&vitaTexture);
-    Dino doux = dino_create(&douxTexture);
-    Dino mort = dino_create(&mortTexture);
+    float floor = data.PongBounds.Height - (float) pardTexture.height;
+    Dino pard = dino_create(&pardTexture, (Vector2) {
+            (float) GetRandomValue((int) data.PongBounds.Position.x,
+                                   (int) data.PongBounds.Width),
+            floor});
+    Dino vita = dino_create(&vitaTexture, (Vector2) {
+            (float) GetRandomValue((int) data.PongBounds.Position.x,
+                                   (int) data.PongBounds.Width),
+            floor});
+    Dino doux = dino_create(&douxTexture, (Vector2) {
+            (float) GetRandomValue((int) data.PongBounds.Position.x,
+                                   (int) data.PongBounds.Width),
+            floor});
+    Dino mort = dino_create(&mortTexture, (Vector2) {
+            (float) GetRandomValue((int) data.PongBounds.Position.x,
+                                   (int) data.PongBounds.Width),
+            floor});
 
-    pard.Position = (Vector2){10, 10};
-    vita.Position = (Vector2){10, 30};
-    doux.Position = (Vector2){10, 50};
-    mort.Position = (Vector2){10, 70};
+    pard.Speed = 1;
+    pard.Velocity.x = GetRandomValue(0, 1) ? pard.Speed : -pard.Speed;
+    doux.Speed = 1.5f;
+    doux.Velocity.x = GetRandomValue(0, 1) ? doux.Speed : -doux.Speed;
+    vita.Speed = 3;
+    vita.Velocity.x = GetRandomValue(0, 1) ? vita.Speed : -vita.Speed;
+    mort.Speed = 2;
+    mort.Velocity.x = GetRandomValue(0, 1) ? mort.Speed : -mort.Speed;
 
     data.Dinos[0] = pard;
     data.Dinos[1] = vita;
