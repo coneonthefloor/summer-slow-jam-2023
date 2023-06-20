@@ -3,6 +3,17 @@
 
 #include "main.h"
 
+void buy_dino(Dino *dino, int cost, GameData *data) {
+    data->Gold = data->Gold - cost;
+    Vector2 pos = {data->PongBounds.Width / 2,
+                   data->PongBounds.Height - dino->Texture.height};
+    Dino newDino = dino_create(&dino->Texture, pos);
+    newDino.Velocity = (Vector2) {
+            GetRandomValue(0, 1) ? dino->Speed : -dino->Speed, 0};
+    data->Dinos[data->DinoCount] = newDino;
+    data->DinoCount += 1;
+}
+
 void drawGoldCount(int goldCount, AABB *bounds) {
     int textPad = 10;
     int fontSize = 20;
@@ -40,7 +51,7 @@ void Update(GameData *data) {
         }
 
         if (ball_hits_paddle(&data->Ball, &data->LeftPaddle)) {
-            data->Gold++;
+            data->Gold += 400;
             data->Ball.Velocity.x = data->Ball.Speed;
             data->Ball.Velocity.y = (float) GetRandomValue(
                     (int) data->Ball.Speed / 2,
@@ -60,27 +71,11 @@ void Update(GameData *data) {
         ball_set_default_values(&data->Ball, &data->PongBounds);
     }
 
-    for (int i = 0; i < data->DinoCount; i++) {
-        dino_update(&data->Dinos[i], &data->PongBounds);
+    if (data->DinoCount > 0) {
+        for (int i = 0; i < data->DinoCount; i++) {
+            dino_update(&data->Dinos[i], &data->PongBounds);
+        }
     }
-}
-
-void Draw(GameData *data) {
-    BeginDrawing();
-
-    ClearBackground(BLACK);
-
-    aabb_draw(&data->PongBounds);
-    drawGoldCount(data->Gold, &data->PongBounds);
-    paddle_draw(&data->RightPaddle);
-    paddle_draw(&data->LeftPaddle);
-    ball_draw(&data->Ball);
-
-    for (int i = 0; i < data->DinoCount; i++) {
-        dino_draw(&data->Dinos[i]);
-    }
-
-    EndDrawing();
 }
 
 Texture2D getTextureFromImageFile(const char *fileName) {
@@ -111,6 +106,8 @@ GameData init() {
     data.LeftPaddle.Position = left_paddle_pos;
     data.RightPaddle.Position = right_paddle_pos;
 
+    data.DinoCount = 0;
+
     return data;
 }
 
@@ -131,42 +128,126 @@ int main(void) {
     Texture2D mortTexture = getTextureFromImageFile(ASSETS_PATH"/mort.png");
 
     float floor = data.PongBounds.Height - (float) pardTexture.height;
-    Dino pard = dino_create(&pardTexture, (Vector2) {
-            (float) GetRandomValue((int) data.PongBounds.Position.x,
-                                   (int) data.PongBounds.Width),
-            floor});
-    Dino vita = dino_create(&vitaTexture, (Vector2) {
-            (float) GetRandomValue((int) data.PongBounds.Position.x,
-                                   (int) data.PongBounds.Width),
-            floor});
-    Dino doux = dino_create(&douxTexture, (Vector2) {
-            (float) GetRandomValue((int) data.PongBounds.Position.x,
-                                   (int) data.PongBounds.Width),
-            floor});
-    Dino mort = dino_create(&mortTexture, (Vector2) {
-            (float) GetRandomValue((int) data.PongBounds.Position.x,
-                                   (int) data.PongBounds.Width),
-            floor});
+    Dino pard = dino_create(&pardTexture, (Vector2) {0, 0});
+    Dino vita = dino_create(&vitaTexture, (Vector2) {0, 0});
+    Dino doux = dino_create(&douxTexture, (Vector2) {0, 0});
+    Dino mort = dino_create(&mortTexture, (Vector2) {0, 0});
 
-    pard.Speed = 1;
-    pard.Velocity.x = GetRandomValue(0, 1) ? pard.Speed : -pard.Speed;
+    pard.Speed = .5f;
     doux.Speed = 1.5f;
-    doux.Velocity.x = GetRandomValue(0, 1) ? doux.Speed : -doux.Speed;
-    vita.Speed = 3;
-    vita.Velocity.x = GetRandomValue(0, 1) ? vita.Speed : -vita.Speed;
-    mort.Speed = 2;
-    mort.Velocity.x = GetRandomValue(0, 1) ? mort.Speed : -mort.Speed;
+    vita.Speed = 2;
+    mort.Speed = 1;
 
-    data.Dinos[0] = pard;
-    data.Dinos[1] = vita;
-    data.Dinos[2] = doux;
-    data.Dinos[3] = mort;
+    int pardCost = 5;
+    int douxCost = 6;
+    int mortCost = 7;
+    int vitaCost = 8;
 
-    data.DinoCount = 4;
+    int defaultOutline = 8;
+    int redLineThickness = defaultOutline;
+    int blueLineThickness = defaultOutline;
+    int greenLineThickness = defaultOutline;
+    int yellowLineThickness = defaultOutline;
+
+    Vector2 mousePoint = {0.0f, 0.0f};
+
+    float xPad = 10.0f;
+    float yPad = 20.0f;
+    float btnHeight = 132.0f;
+    float btnWidth = data.PongBounds.Width / 2 - xPad * 2;
+    Rectangle redBtnRec = {xPad, data.PongBounds.Height + yPad, btnWidth,
+                           btnHeight};
+    Rectangle yellowBtnRec = {xPad * 3 + btnWidth,
+                              data.PongBounds.Height + yPad,
+                              btnWidth, btnHeight};
+    Rectangle greenBtnRec = {xPad * 3 + btnWidth,
+                             data.PongBounds.Height + yPad * 2 + btnHeight,
+                             btnWidth,
+                             btnHeight};
+    Rectangle blueBtnRec = {xPad, data.PongBounds.Height + yPad * 2 + btnHeight,
+                            btnWidth,
+                            btnHeight};
 
     while (!WindowShouldClose()) {
+        mousePoint = GetMousePosition();
+
+        if (CheckCollisionPointRec(mousePoint, redBtnRec)) {
+            redLineThickness = defaultOutline * 1.5f;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) &&
+                data.Gold >= mortCost) {
+                buy_dino(&mort, mortCost, &data);
+            }
+        } else {
+            redLineThickness = defaultOutline;
+        }
+
+        if (CheckCollisionPointRec(mousePoint, yellowBtnRec)) {
+            yellowLineThickness = defaultOutline * 1.5f;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) &&
+                data.Gold >= pardCost) {
+                buy_dino(&pard, pardCost, &data);
+            }
+        } else {
+            yellowLineThickness = defaultOutline;
+        }
+
+        if (CheckCollisionPointRec(mousePoint, greenBtnRec)) {
+            greenLineThickness = defaultOutline * 1.5f;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) &&
+                data.Gold >= vitaCost) {
+                buy_dino(&vita, vitaCost, &data);
+            }
+        } else {
+            greenLineThickness = defaultOutline;
+        }
+
+        if (CheckCollisionPointRec(mousePoint, blueBtnRec)) {
+            blueLineThickness = defaultOutline * 1.5f;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) &&
+                data.Gold >= douxCost) {
+                buy_dino(&doux, douxCost, &data);
+            }
+        } else {
+            blueLineThickness = defaultOutline;
+        }
+
         Update(&data);
-        Draw(&data);
+
+
+        BeginDrawing();
+
+        ClearBackground(BLACK);
+
+        aabb_draw(&data.PongBounds);
+        drawGoldCount(data.Gold, &data.PongBounds);
+        paddle_draw(&data.RightPaddle);
+        paddle_draw(&data.LeftPaddle);
+        ball_draw(&data.Ball);
+
+        if (data.DinoCount > 0) {
+            for (int i = 0; i < data.DinoCount; i++) {
+                dino_draw(&data.Dinos[i]);
+            }
+        }
+
+        DrawRectangle(redBtnRec.x, redBtnRec.y, redBtnRec.width,
+                      redBtnRec.height, RED);
+        DrawRectangleLinesEx(redBtnRec, redLineThickness, MAROON);
+        DrawRectangle(yellowBtnRec.x, yellowBtnRec.y, yellowBtnRec.width,
+                      yellowBtnRec.height, YELLOW);
+        DrawRectangleLinesEx(yellowBtnRec, yellowLineThickness, ORANGE);
+        DrawRectangle(greenBtnRec.x, greenBtnRec.y, greenBtnRec.width,
+                      greenBtnRec.height, GREEN);
+        DrawRectangleLinesEx(greenBtnRec, greenLineThickness, DARKGREEN);
+        DrawRectangle(blueBtnRec.x, blueBtnRec.y, blueBtnRec.width,
+                      blueBtnRec.height, BLUE);
+        DrawRectangleLinesEx(blueBtnRec, blueLineThickness, DARKBLUE);
+
+        EndDrawing();
     }
 
     UnloadTexture(pardTexture);
