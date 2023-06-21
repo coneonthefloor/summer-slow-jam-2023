@@ -1,4 +1,7 @@
 {
   "cmake.configureArgs": [],
   "cmake.configureSettings": {},
+  "files.associations": {
+    "raylib.h": "c"
+  },
 }
