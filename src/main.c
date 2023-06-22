@@ -133,6 +133,14 @@ GameData init()
     return data;
 }
 
+void draw_button(Rectangle btn, Color primary, Color outline, int outlineThickness, const char *text)
+{
+    DrawRectangle(btn.x, btn.y, btn.width,
+                  btn.height, primary);
+    DrawRectangleLinesEx(btn, outlineThickness, outline);
+    DrawText(text, btn.x + 20, btn.y + 20, 30, BLACK);
+}
+
 int main(void)
 {
     const int screenWidth = 640;
@@ -145,7 +153,7 @@ int main(void)
 
     GameData data = init();
 
-    Font font = GetFontDefault(); 
+    Font font = GetFontDefault();
 
     Texture2D pardTexture = getTextureFromImageFile(ASSETS_PATH "/pard.png");
     Texture2D vitaTexture = getTextureFromImageFile(ASSETS_PATH "/vita.png");
@@ -277,25 +285,10 @@ int main(void)
             }
         }
 
-        DrawRectangle(redBtnRec.x, redBtnRec.y, redBtnRec.width,
-                      redBtnRec.height, RED);
-        DrawRectangleLinesEx(redBtnRec, redLineThickness, MAROON);
-        DrawText("$7 Mort", redBtnRec.x + 20, redBtnRec.y + 20, 30, BLACK);
-
-        DrawRectangle(yellowBtnRec.x, yellowBtnRec.y, yellowBtnRec.width,
-                      yellowBtnRec.height, YELLOW);
-        DrawRectangleLinesEx(yellowBtnRec, yellowLineThickness, ORANGE);
-        DrawText("$5 Pard", yellowBtnRec.x + 20, yellowBtnRec.y + 20, 30, BLACK);
-
-        DrawRectangle(greenBtnRec.x, greenBtnRec.y, greenBtnRec.width,
-                      greenBtnRec.height, GREEN);
-        DrawRectangleLinesEx(greenBtnRec, greenLineThickness, DARKGREEN);
-        DrawText("$8 Vita", greenBtnRec.x + 20, greenBtnRec.y + 20, 30, BLACK);
-        
-        DrawRectangle(blueBtnRec.x, blueBtnRec.y, blueBtnRec.width,
-                      blueBtnRec.height, BLUE);
-        DrawRectangleLinesEx(blueBtnRec, blueLineThickness, DARKBLUE);
-        DrawText("$6 Doux", blueBtnRec.x + 20, blueBtnRec.y + 20, 30, BLACK);
+        draw_button(yellowBtnRec, YELLOW, ORANGE, yellowLineThickness, "$5 Pard");
+        draw_button(blueBtnRec, BLUE, DARKBLUE, blueLineThickness, "$6 Doux");
+        draw_button(redBtnRec, RED, MAROON, redLineThickness, "$7 Mort");
+        draw_button(greenBtnRec, GREEN, DARKGREEN, greenLineThickness, "$8 Vita");
 
         EndDrawing();
     }

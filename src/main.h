@@ -10,7 +10,6 @@
 #include "paddle.h"
 #include "aabb.h"
 #include "dino.h"
-#include "text.h"
 
 typedef struct GameData {
     int Gold;
